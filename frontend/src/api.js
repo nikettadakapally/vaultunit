@@ -1,4 +1,6 @@
-const API_URL = import.meta.env.VITE_API_URL ?? '/api';
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL?.replace(/\/+$/, '') ||
+  (import.meta.env.DEV ? '/api' : undefined);
 
 export class ApiError extends Error {
   constructor(message, status) {
@@ -16,13 +18,17 @@ function csrfCookie() {
 }
 
 async function request(path, options = {}) {
+  if (!API_BASE_URL) {
+    throw new Error('VITE_API_BASE_URL must be set to the deployed backend API URL.');
+  }
+
   const method = options.method ?? 'GET';
   const headers = { 'Content-Type': 'application/json', ...options.headers };
   if (!['GET', 'HEAD', 'OPTIONS'].includes(method.toUpperCase())) {
     headers['X-XSRF-TOKEN'] = csrfCookie();
   }
 
-  const response = await fetch(`${API_URL}${path}`, {
+  const response = await fetch(`${API_BASE_URL}${path}`, {
     credentials: 'include',
     ...options,
     headers,

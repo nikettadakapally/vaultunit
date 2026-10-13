@@ -20,6 +20,8 @@ For a first-time manual frontend setup, run `npm run install:frontend` from the 
 
 The frontend proxies `/api` calls to Spring Boot while developing, so account cookies stay on the same origin. The API runs at `http://localhost:8080/api`. By default, the API stores H2 data in `backend/vaultunit-data.mv.db`; H2 creates the database directory and file on startup if they do not exist. Set `VAULTUNIT_DB_URL` to use a different database location. Do not run multiple backend processes at once: H2 permits one embedded writer, and they use port 8080. The VS Code start task checks for an already-running VaultUnit API before launching Maven, avoiding a duplicate process. The unauthenticated H2 console is disabled. Passwords are BCrypt-hashed, login uses a server-side session and CSRF protection, and finance endpoints require authentication. Each account can see and modify only its own transactions. Newly created accounts start with no transactions. Set `vaultunit.opening-balance` in `backend-new/src/main/resources/application.properties` to change the starting balance for new dashboards.
 
+For a separate Vercel frontend and Railway backend, set the Vercel environment variable `VITE_API_BASE_URL` to the Railway API base URL, including the `/api` path (for example, `https://your-service.up.railway.app/api`), and redeploy the frontend. During local Vite development, the frontend uses `/api` and the Vite dev-server proxy.
+
 ## API endpoints
 
 - `GET /api/auth/csrf` — initialize a CSRF token
