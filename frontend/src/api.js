@@ -4,10 +4,20 @@ const API_BASE_URL =
 
 export class ApiError extends Error {
   constructor(message, status) {
-    super(message);
+    super(status === 401 ? '' : message);
     this.name = 'ApiError';
     this.status = status;
   }
+}
+
+export function getConnectionErrorMessage(error) {
+  if (error instanceof ApiError && error.status >= 500) {
+    return error.message || 'The account service is temporarily unavailable. Please try again.';
+  }
+  if (error instanceof TypeError) {
+    return 'Could not connect to the account service. Check your connection and try again.';
+  }
+  return '';
 }
 
 function csrfCookie() {

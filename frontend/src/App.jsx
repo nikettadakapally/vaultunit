@@ -8,6 +8,7 @@ import {
   declineMoneyRequest,
   deleteTransaction,
   getChallenges,
+  getConnectionErrorMessage,
   getCsrfToken,
   getCurrentUser,
   getDashboard,
@@ -251,17 +252,9 @@ function App() {
     } catch (error) {
       if (error instanceof ApiError && error.status === 401) {
         setUser(null);
-      } else if (error instanceof ApiError) {
-        setUser(null);
-        if (error.status >= 500) {
-          setAuthError('VaultUnit could not connect to your account service. Start the backend and try again.');
-        }
-      } else if (error instanceof TypeError) {
-        setUser(null);
-        setAuthError('VaultUnit could not connect to your account service. Start the backend and try again.');
       } else {
         setUser(null);
-        console.error('Could not check the current VaultUnit session.', error);
+        setAuthError(getConnectionErrorMessage(error));
       }
     } finally {
       setAuthReady(true);
@@ -498,7 +491,7 @@ function FinanceDashboard({ user, onLogout, onUserUpdated, theme, onThemeToggle 
 
   useEffect(() => {
     refresh()
-      .catch((loadError) => setError(loadError.message))
+      .catch((loadError) => setError(getConnectionErrorMessage(loadError)))
       .finally(() => setLoading(false));
   }, [refresh]);
 
@@ -772,7 +765,7 @@ function FinanceDashboard({ user, onLogout, onUserUpdated, theme, onThemeToggle 
       setQuickEntryError('');
       await refresh();
     } catch (saveError) {
-      setError(saveError.message);
+      setError(getConnectionErrorMessage(saveError));
     } finally {
       setSaving(false);
     }
@@ -789,9 +782,12 @@ function FinanceDashboard({ user, onLogout, onUserUpdated, theme, onThemeToggle 
         setSettingsFeedback({ type: 'success', text: 'Home currency updated.' });
       }
     } catch (preferenceError) {
-      setError(preferenceError.message);
+      setError(getConnectionErrorMessage(preferenceError));
       if (activeView === 'settings') {
-        setSettingsFeedback({ type: 'error', text: `Could not update home currency: ${preferenceError.message}` });
+        const message = getConnectionErrorMessage(preferenceError);
+        if (message) {
+          setSettingsFeedback({ type: 'error', text: `Could not update home currency: ${message}` });
+        }
       }
     } finally {
       setSavingCurrency(false);
@@ -927,7 +923,7 @@ function FinanceDashboard({ user, onLogout, onUserUpdated, theme, onThemeToggle 
       await deleteTransaction(id);
       await refresh();
     } catch (deleteError) {
-      setError(deleteError.message);
+      setError(getConnectionErrorMessage(deleteError));
     }
   }
 
@@ -949,7 +945,7 @@ function FinanceDashboard({ user, onLogout, onUserUpdated, theme, onThemeToggle 
       });
       await refresh();
     } catch (createError) {
-      setChallengeError(createError.message);
+      setChallengeError(getConnectionErrorMessage(createError));
     } finally {
       setChallengeSaving(false);
     }
@@ -966,7 +962,7 @@ function FinanceDashboard({ user, onLogout, onUserUpdated, theme, onThemeToggle 
       }
       setChallenges(await getChallenges());
     } catch (membershipError) {
-      setChallengeError(membershipError.message);
+      setChallengeError(getConnectionErrorMessage(membershipError));
     } finally {
       setChallengeActionId(null);
     }
@@ -992,7 +988,7 @@ function FinanceDashboard({ user, onLogout, onUserUpdated, theme, onThemeToggle 
       setMoneyRequestFormOpen(false);
       setMoneyRequests(await getMoneyRequests());
     } catch (requestError) {
-      setMoneyRequestError(requestError.message);
+      setMoneyRequestError(getConnectionErrorMessage(requestError));
     } finally {
       setMoneyRequestSaving(false);
     }
@@ -1007,7 +1003,7 @@ function FinanceDashboard({ user, onLogout, onUserUpdated, theme, onThemeToggle 
       else await cancelMoneyRequest(request.id);
       setMoneyRequests(await getMoneyRequests());
     } catch (actionError) {
-      setMoneyRequestError(actionError.message);
+      setMoneyRequestError(getConnectionErrorMessage(actionError));
     } finally {
       setMoneyRequestActionId(null);
     }
@@ -1167,7 +1163,7 @@ function FinanceDashboard({ user, onLogout, onUserUpdated, theme, onThemeToggle 
           {error && (
             <div className="error-banner" role="alert">
               <span>{error}</span>
-              <button onClick={() => refresh().catch((loadError) => setError(loadError.message))}>Retry</button>
+              <button onClick={() => refresh().catch((loadError) => setError(getConnectionErrorMessage(loadError)))}>Retry</button>
             </div>
           )}
           {homeRateError && user.homeCurrency !== 'INR' && (
