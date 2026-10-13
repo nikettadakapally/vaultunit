@@ -1,0 +1,15 @@
+# Frontend
+node_modules/
+frontend/node_modules/
+frontend/dist/
+
+# Java build output and local H2 database
+backend/target/
+backend-new/target/
+backend/vaultunit-data.mv.db
+backend/vaultunit-data.trace.db
+backend/*.lock.db
+
+# IDE and operating system files
+.DS_Store
+Thumbs.db
