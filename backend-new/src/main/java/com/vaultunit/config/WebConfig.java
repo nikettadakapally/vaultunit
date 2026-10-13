@@ -15,6 +15,7 @@ public class WebConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of(
                 "https://vaultunit-1f390ai5s-ace-dc38.vercel.app",
+                "https://vaultunit-three.vercel.app",
                 "http://localhost:5173",
                 "http://127.0.0.1:5173"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PATCH", "DELETE", "OPTIONS"));

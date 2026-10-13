@@ -37,18 +37,26 @@ class VaultUnitApplicationSmokeTest {
 
     @Test
     void allowsCredentialedCorsFromProductionVercelOrigin() {
+        assertCredentialedCorsOrigin("https://vaultunit-1f390ai5s-ace-dc38.vercel.app");
+    }
+
+    @Test
+    void allowsCredentialedCorsFromVaultUnitThreeVercelOrigin() {
+        assertCredentialedCorsOrigin("https://vaultunit-three.vercel.app");
+    }
+
+    private void assertCredentialedCorsOrigin(String origin) {
         HttpHeaders headers = new HttpHeaders();
-        headers.setOrigin("https://vaultunit-1f390ai5s-ace-dc38.vercel.app");
+        headers.setOrigin(origin);
         headers.setAccessControlRequestMethod(HttpMethod.POST);
         ResponseEntity<String> response = http.exchange(
                 "/api/auth/register",
                 HttpMethod.OPTIONS,
                 new HttpEntity<>(headers),
                 String.class);
-
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getHeaders().getAccessControlAllowOrigin())
-                .isEqualTo("https://vaultunit-1f390ai5s-ace-dc38.vercel.app");
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getHeaders().getAccessControlAllowOrigin()).isEqualTo(origin);
         assertThat(response.getHeaders().getAccessControlAllowCredentials()).isTrue();
     }
 }
