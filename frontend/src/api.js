@@ -1,6 +1,8 @@
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL?.replace(/\/+$/, '') ||
   (import.meta.env.DEV ? '/api' : undefined);
+let csrfToken = '';
+let csrfHeaderName = 'X-XSRF-TOKEN';
 
 export class ApiError extends Error {
   constructor(message, status) {
@@ -20,22 +22,19 @@ export function getConnectionErrorMessage(error) {
   return '';
 }
 
-function csrfCookie() {
-  const cookie = document.cookie
-    .split('; ')
-    .find((entry) => entry.startsWith('XSRF-TOKEN='));
-  return cookie ? decodeURIComponent(cookie.slice('XSRF-TOKEN='.length)) : '';
-}
-
 async function request(path, options = {}) {
   if (!API_BASE_URL) {
     throw new Error('VITE_API_BASE_URL must be set to the deployed backend API URL.');
   }
 
   const method = options.method ?? 'GET';
+  if (!['GET', 'HEAD', 'OPTIONS'].includes(method.toUpperCase()) && !csrfToken) {
+    await getCsrfToken();
+  }
+
   const headers = { 'Content-Type': 'application/json', ...options.headers };
   if (!['GET', 'HEAD', 'OPTIONS'].includes(method.toUpperCase())) {
-    headers['X-XSRF-TOKEN'] = csrfCookie();
+    headers[csrfHeaderName] = csrfToken;
   }
 
   const response = await fetch(`${API_BASE_URL}${path}`, {
@@ -59,7 +58,12 @@ async function request(path, options = {}) {
   return response.status === 204 ? null : response.json();
 }
 
-export const getCsrfToken = () => request('/auth/csrf');
+export async function getCsrfToken() {
+  const token = await request('/auth/csrf');
+  csrfToken = token.token;
+  csrfHeaderName = token.headerName;
+  return token;
+}
 export const getCurrentUser = () => request('/auth/me');
 export const registerAccount = (account) =>
   request('/auth/register', { method: 'POST', body: JSON.stringify(account) });
