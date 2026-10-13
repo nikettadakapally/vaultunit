@@ -1,0 +1,5 @@
+{
+  "task.allowAutomaticTasks": "on",
+  "java.configuration.updateBuildConfiguration": "interactive",
+  "java.compile.nullAnalysis.mode": "disabled"
+}

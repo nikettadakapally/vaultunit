@@ -1,0 +1,361 @@
+{
+  "schema": "clarification-questions/v1",
+  "generated_at": "2026-10-10T18:00:10Z",
+  "user_input": "can you redo the entire backend because you cant fix a single problem so just redo the backend please and thistime with no errors",
+  "title": "VaultUnit backend rewrite",
+  "assessment_snapshot": {
+    "intro": "The repository contains a Java 17 / Spring Boot 3.5.6 backend with a file-based H2 database and a React frontend that depends on the API.",
+    "bullets": [
+      "Backend exposes authentication, preferences, dashboard, transactions, community challenges, and money-request endpoints.",
+      "Authentication uses Spring Security sessions, BCrypt passwords, and CSRF protection.",
+      "An existing H2 database file is present; its preservation or migration policy is not specified.",
+      "The backend has an existing authentication test suite; the frontend and backend are started by VS Code tasks."
+    ]
+  },
+  "proposed_outcome": "Rewrite the backend at the chosen target location, retaining the agreed API and data behavior, with a verified build, passing backend tests, and a successful startup check. Avoid promising an absolute absence of errors; validate the defined acceptance criteria and report any remaining limitations.",
+  "scope": [
+    "backend",
+    "generic"
+  ],
+  "status": "answered",
+  "questions": [
+    {
+      "id": "B1",
+      "kit": "backend",
+      "field": "target.framework",
+      "title": "Target backend framework",
+      "question": "Which backend framework and version should the rewrite use?",
+      "importance": "required",
+      "impact": 5,
+      "recommended": "Spring Boot 3.5.6 (Java 17)",
+      "default": null,
+      "prefilled": true,
+      "prefilled_value": "Spring Boot 3.5.6 (Java 17)",
+      "answer": {
+        "value": "Spring Boot 3.5.6 (Java 17)",
+        "source": "user"
+      },
+      "depends_on": null,
+      "options": [
+        {
+          "value": "Spring Boot 3.5.6 (Java 17)",
+          "label": "Spring Boot 3.5.6 (Java 17)"
+        },
+        {
+          "value": "Spring Boot 4.x (Java 17+)",
+          "label": "Spring Boot 4.x (Java 17+)"
+        },
+        {
+          "value": "Quarkus (Java)",
+          "label": "Quarkus (Java)"
+        },
+        {
+          "value": "FastAPI (Python)",
+          "label": "FastAPI (Python)"
+        },
+        {
+          "value": "Express (Node.js)",
+          "label": "Express (Node.js)"
+        }
+      ],
+      "allow_other": true,
+      "type": "single_select"
+    },
+    {
+      "id": "B2",
+      "kit": "backend",
+      "field": "api.contract_preservation",
+      "title": "API compatibility",
+      "question": "How should the rewritten backend handle existing API routes, request/response payloads, status codes, and frontend compatibility?",
+      "importance": "required",
+      "impact": 5,
+      "recommended": "must preserve",
+      "default": "must preserve",
+      "prefilled": false,
+      "prefilled_value": null,
+      "answer": {
+        "value": "must preserve",
+        "source": "user"
+      },
+      "depends_on": null,
+      "options": [
+        {
+          "value": "must preserve",
+          "label": "Must preserve existing API contracts"
+        },
+        {
+          "value": "can break with versioning",
+          "label": "Breaking changes allowed only with a new API version; keep old routes during transition"
+        },
+        {
+          "value": "can break",
+          "label": "Breaking changes allowed; redesign the API"
+        },
+        {
+          "value": "partial: preserve all currently used frontend API contracts",
+          "label": "Preserve the current frontend's API contracts; other endpoints may change"
+        }
+      ],
+      "allow_other": true,
+      "type": "single_select"
+    },
+    {
+      "id": "B3",
+      "kit": "backend",
+      "field": "data.migration_strategy",
+      "title": "Database and data",
+      "question": "What should happen to the existing H2 database and its account, transaction, challenge, and money-request data during the rewrite?",
+      "importance": "required",
+      "impact": 5,
+      "recommended": "TBD / assess in research phase",
+      "default": "TBD / assess in research phase",
+      "prefilled": false,
+      "prefilled_value": null,
+      "answer": {
+        "value": "TBD / assess in research phase",
+        "source": "user"
+      },
+      "depends_on": null,
+      "options": [
+        {
+          "value": "in-place",
+          "label": "Keep the H2 database and migrate its schema in place"
+        },
+        {
+          "value": "dual-write",
+          "label": "Run old and new schemas together with synchronized writes during transition"
+        },
+        {
+          "value": "new schema",
+          "label": "Move to a new schema/database and migrate existing data"
+        },
+        {
+          "value": "no migration",
+          "label": "Leave the existing database untouched; API rewrite only"
+        },
+        {
+          "value": "TBD / assess in research phase",
+          "label": "Assess data migration and recommend a safe approach before implementation"
+        }
+      ],
+      "allow_other": true,
+      "type": "single_select"
+    },
+    {
+      "id": "B4",
+      "kit": "backend",
+      "field": "auth.framework",
+      "title": "Authentication approach",
+      "question": "Which authentication approach should the rewrite use?",
+      "importance": "recommended",
+      "impact": 4,
+      "recommended": "preserve existing auth mechanism; detect from codebase",
+      "default": "preserve existing auth mechanism; detect from codebase",
+      "prefilled": true,
+      "prefilled_value": "preserve existing auth mechanism; detect from codebase",
+      "answer": {
+        "value": "preserve existing auth mechanism; detect from codebase",
+        "source": "user"
+      },
+      "depends_on": null,
+      "options": [
+        {
+          "value": "preserve existing auth mechanism; detect from codebase",
+          "label": "Preserve current Spring Security session authentication, BCrypt passwords, and CSRF behavior"
+        },
+        {
+          "value": "JWT bearer tokens",
+          "label": "Replace sessions with JWT bearer tokens"
+        },
+        {
+          "value": "external identity provider",
+          "label": "Use an external identity provider (specify which one)"
+        },
+        {
+          "value": "other",
+          "label": "Use another authentication framework or policy"
+        }
+      ],
+      "allow_other": true,
+      "type": "single_select"
+    },
+    {
+      "id": "B5",
+      "kit": "backend",
+      "field": "nfr.sla",
+      "title": "Performance and availability",
+      "question": "What performance or availability target should the rewritten backend meet?",
+      "importance": "recommended",
+      "impact": 3,
+      "recommended": "match current production baseline; no regression",
+      "default": "match current production baseline; no regression",
+      "prefilled": false,
+      "prefilled_value": null,
+      "answer": {
+        "value": "match current production baseline; no regression",
+        "source": "user"
+      },
+      "depends_on": null,
+      "options": [
+        {
+          "value": "match current production baseline; no regression",
+          "label": "Match current behavior; no performance regression"
+        },
+        {
+          "value": "p95 latency under 200 ms",
+          "label": "p95 API latency under 200 ms"
+        },
+        {
+          "value": "availability 99.9%",
+          "label": "99.9% availability target"
+        },
+        {
+          "value": "no defined production SLA",
+          "label": "No defined production SLA; focus on correct behavior and reliable startup"
+        }
+      ],
+      "allow_other": true,
+      "type": "single_select"
+    },
+    {
+      "id": "G1",
+      "kit": "generic",
+      "field": "success.definition",
+      "title": "Definition of done",
+      "question": "What measurable results will mean the backend rewrite is successful?",
+      "importance": "required",
+      "impact": 5,
+      "recommended": "Feature parity; backend builds, tests pass, and startup is verified",
+      "default": "feature parity with the current system; all existing user-facing behaviors preserved",
+      "prefilled": true,
+      "prefilled_value": "Feature parity; backend builds, tests pass, and startup is verified",
+      "answer": {
+        "value": "Feature parity; backend builds, tests pass, and startup is verified",
+        "source": "user"
+      },
+      "depends_on": null,
+      "options": [
+        {
+          "value": "Feature parity; backend builds, tests pass, and startup is verified",
+          "label": "Preserve current backend behavior; build succeeds, tests pass, and startup/API smoke checks pass"
+        },
+        {
+          "value": "Build and startup only",
+          "label": "Build succeeds and the application starts; behavior changes are acceptable"
+        },
+        {
+          "value": "Feature parity plus expanded automated API coverage",
+          "label": "Preserve behavior, pass build/tests/startup checks, and add broader API regression tests"
+        }
+      ],
+      "allow_other": true,
+      "type": "single_select"
+    },
+    {
+      "id": "G2",
+      "kit": "generic",
+      "field": "out_of_scope",
+      "title": "Out-of-scope boundaries",
+      "question": "What must not be changed as part of this backend rewrite?",
+      "importance": "recommended",
+      "impact": 3,
+      "recommended": null,
+      "default": "no explicit exclusions; agent will infer from project structure",
+      "prefilled": true,
+      "prefilled_value": "Keep the React frontend and its existing user-facing flows unchanged unless API compatibility work requires coordinated changes.",
+      "answer": {
+        "value": "Keep the React frontend and its existing user-facing flows unchanged unless API compatibility work requires coordinated changes.",
+        "source": "user"
+      },
+      "depends_on": null,
+      "type": "text"
+    },
+    {
+      "id": "G3",
+      "kit": "generic",
+      "field": "existing_tests.posture",
+      "title": "Existing test policy",
+      "question": "How should existing backend tests be handled?",
+      "importance": "recommended",
+      "impact": 4,
+      "recommended": "must pass",
+      "default": "must pass",
+      "prefilled": false,
+      "prefilled_value": null,
+      "answer": {
+        "value": "must pass",
+        "source": "user"
+      },
+      "depends_on": null,
+      "options": [
+        {
+          "value": "must pass",
+          "label": "All existing tests must pass; add tests for rewritten behavior"
+        },
+        {
+          "value": "can rewrite",
+          "label": "Tests may be replaced with equivalent coverage for the new implementation"
+        },
+        {
+          "value": "ignore",
+          "label": "Do not rely on existing tests; create new tests from scratch"
+        },
+        {
+          "value": "partial: existing tests and new API behavior tests must pass",
+          "label": "Keep existing coverage where applicable and add API regression tests"
+        }
+      ],
+      "allow_other": true,
+      "type": "single_select"
+    },
+    {
+      "id": "G4",
+      "kit": "generic",
+      "field": "target.output_location",
+      "title": "Rewrite output location",
+      "question": "Where should the rewritten backend be created? A separate sibling folder protects the current backend and database until the replacement is verified.",
+      "importance": "required",
+      "impact": 5,
+      "recommended": "backend-new",
+      "default": "backend-new",
+      "prefilled": false,
+      "prefilled_value": null,
+      "answer": {
+        "value": "backend-new",
+        "source": "user"
+      },
+      "depends_on": null,
+      "options": [
+        {
+          "value": "backend-new",
+          "label": "Create a new sibling folder named backend-new (Recommended; leave the existing backend untouched during rewrite)"
+        },
+        {
+          "value": "in-place",
+          "label": "Replace the existing backend in place"
+        }
+      ],
+      "allow_other": true,
+      "type": "single_select"
+    },
+    {
+      "id": "G5",
+      "kit": "generic",
+      "field": "constraints.additional",
+      "title": "Additional constraints",
+      "question": "Add any additional requirements, exclusions, operational constraints, or dependencies not covered above.",
+      "importance": "optional",
+      "impact": 2,
+      "recommended": null,
+      "default": "None beyond the decisions listed in this specification.",
+      "prefilled": true,
+      "prefilled_value": "None beyond the decisions listed in this specification.",
+      "answer": {
+        "value": "None beyond the decisions listed in this specification.",
+        "source": "user"
+      },
+      "depends_on": null,
+      "type": "text"
+    }
+  ]
+}
