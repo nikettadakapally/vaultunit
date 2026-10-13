@@ -251,8 +251,17 @@ function App() {
     } catch (error) {
       if (error instanceof ApiError && error.status === 401) {
         setUser(null);
-      } else {
+      } else if (error instanceof ApiError) {
+        setUser(null);
+        if (error.status >= 500) {
+          setAuthError('VaultUnit could not connect to your account service. Start the backend and try again.');
+        }
+      } else if (error instanceof TypeError) {
+        setUser(null);
         setAuthError('VaultUnit could not connect to your account service. Start the backend and try again.');
+      } else {
+        setUser(null);
+        console.error('Could not check the current VaultUnit session.', error);
       }
     } finally {
       setAuthReady(true);
