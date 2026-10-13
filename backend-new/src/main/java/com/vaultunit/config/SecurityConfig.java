@@ -52,7 +52,7 @@ public class SecurityConfig {
                         .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler()))
                 .cors(cors -> { })
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/api/auth/csrf", "/api/auth/register", "/api/auth/login").permitAll()
+                        .requestMatchers("/api/auth/**").permitAll()
                         .anyRequest().authenticated())
                 .exceptionHandling(exceptions -> exceptions.authenticationEntryPoint(
                         (request, response, exception) -> response.sendError(HttpStatus.UNAUTHORIZED.value())))

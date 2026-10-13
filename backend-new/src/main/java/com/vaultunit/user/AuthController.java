@@ -74,16 +74,23 @@ public class AuthController {
     }
 
     @GetMapping("/me")
-    public AccountResponse me(Authentication authentication) {
-        return AccountResponse.from((VaultUnitUserDetails) authentication.getPrincipal());
+    public ResponseEntity<AccountResponse> me(Authentication authentication) {
+        if (authentication == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        return ResponseEntity.ok(AccountResponse.from((VaultUnitUserDetails) authentication.getPrincipal()));
     }
 
     @PatchMapping("/preferences")
-    public AccountResponse updatePreferences(
+    public ResponseEntity<AccountResponse> updatePreferences(
             @Valid @RequestBody CurrencyPreferenceRequest request,
             Authentication authentication) {
+        if (authentication == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
         VaultUnitUserDetails user = (VaultUnitUserDetails) authentication.getPrincipal();
-        return AccountResponse.from(userService.updateHomeCurrency(user.getEmail(), request.homeCurrency()));
+        return ResponseEntity.ok(
+                AccountResponse.from(userService.updateHomeCurrency(user.getEmail(), request.homeCurrency())));
     }
 
     @PostMapping("/logout")
