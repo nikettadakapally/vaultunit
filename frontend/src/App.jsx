@@ -1153,7 +1153,7 @@ function FinanceDashboard({ user, onLogout, onUserUpdated, theme, onThemeToggle 
             <>
           <section className="welcome-row">
             <div>
-              <div className="eyebrow">{new Intl.DateTimeFormat('en-IN', { weekday: 'long', month: 'long', day: 'numeric' }).format(new Date())}</div>
+              <div className="eyebrow">GOOD MORNING · {new Intl.DateTimeFormat('en-IN', { weekday: 'long', month: 'long', day: 'numeric' }).format(new Date())}</div>
               <h1>Your money, <span>in focus.</span></h1>
               <p>A clearer picture today makes a stronger plan for tomorrow.</p>
             </div>
